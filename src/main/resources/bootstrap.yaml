@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: ${nacos-server:@nacos-server@}
+      username: ${nacos-username:@nacos-username@}
+      password: ${nacos-password:@nacos-password@}
+      discovery:
+        # 是否注册到nacos  false不注册
+        enabled: false
+        namespace: ${nacos-namespace:@nacos-namespace@}
+      config:
+        # 是否读取nacos线上配置  false读本地配置
+        enabled: false
+        namespace: ${nacos-namespace:@nacos-namespace@}
+        file-extension: yaml

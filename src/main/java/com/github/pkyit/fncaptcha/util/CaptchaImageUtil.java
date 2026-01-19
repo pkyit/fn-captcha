@@ -2,7 +2,7 @@ package com.github.pkyit.fncaptcha.util;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.RandomUtil;
-import lombok.Data;
+import com.github.pkyit.fncaptcha.domain.dto.CaptchaImageResultDTO;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -11,8 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -33,22 +31,13 @@ public class CaptchaImageUtil {
 		}
 	}
 
-	@Data
-	public static class CaptchaImageResult {
-		private String backgroundBase64;  // data:image/jpeg;base64,...
-		private String sliderBase64;      // data:image/png;base64,...
-		private int gapX;
-		private int gapY;
-		private int blockSize = 36;       // 固定滑块/圆直径 36px
-	}
-
 	/**
 	 * 生成圆形缺口验证码图片
 	 * 画布：300×150
 	 * 滑块：36×36 圆形
 	 * 缺口位置随机：x 60~210, y 40~60
 	 */
-	public static CaptchaImageResult generate() throws IOException {
+	public static CaptchaImageResultDTO generate() throws IOException {
 		// 随机选一张图片
 		String imageName = RandomUtil.randomEle(IMAGE_NAMES);
 		InputStream is = CaptchaImageUtil.class.getClassLoader().getResourceAsStream(IMAGE_DIR + imageName);
@@ -77,13 +66,12 @@ public class CaptchaImageUtil {
 		String bgBase64 = imageToBase64(background, "jpg");
 		String sliderBase64 = imageToBase64(slider, "png");
 
-		CaptchaImageResult result = new CaptchaImageResult();
-		result.setBackgroundBase64("data:image/jpeg;base64," + bgBase64);
-		result.setSliderBase64("data:image/png;base64," + sliderBase64);
-		result.setGapX(gapX);
-		result.setGapY(gapY);
-
-		return result;
+		return CaptchaImageResultDTO.builder()
+			.backgroundBase64("data:image/jpeg;base64," + bgBase64)
+			.sliderBase64("data:image/png;base64," + sliderBase64)
+			.gapX(gapX)
+			.gapY(gapY)
+			.build();
 	}
 
 	/**
@@ -91,6 +79,7 @@ public class CaptchaImageUtil {
 	 *
 	 * @param centerX 圆心 x
 	 * @param centerY 圆心 y
+	 * @param noiseEnabled 是否开启干扰模式
 	 */
 	private static BufferedImage createBackgroundWithCircleGap(BufferedImage source, int centerX, int centerY,boolean noiseEnabled) {
 		// 使用 RGB 类型，不带透明通道
@@ -164,24 +153,4 @@ public class CaptchaImageUtil {
 		}
 	}
 
-	// 测试用
-	public static void main(String[] args) throws Exception {
-		CaptchaImageResult result = generate();
-
-		System.out.println("GapX: " + result.getGapX() + ", GapY: " + result.getGapY());
-		System.out.println("Bg length: " + result.getBackgroundBase64().length());
-		System.out.println("Slider length: " + result.getSliderBase64().length());
-
-		// 保存背景图（去掉前缀 "data:image/jpeg;base64,"）
-		String bgBase64Clean = result.getBackgroundBase64().replace("data:image/jpeg;base64,", "");
-		byte[] bgBytes = Base64.getDecoder().decode(bgBase64Clean);
-		Files.write(Paths.get("background.jpg"), bgBytes);
-		System.out.println("已保存背景图到: background.jpg");
-
-		// 保存滑块图（去掉前缀 "data:image/png;base64,"）
-		String sliderBase64Clean = result.getSliderBase64().replace("data:image/png;base64,", "");
-		byte[] sliderBytes = Base64.getDecoder().decode(sliderBase64Clean);
-		Files.write(Paths.get("slider.png"), sliderBytes);
-		System.out.println("已保存滑块图到: slider.png");
-	}
 }
