@@ -3,6 +3,7 @@ package com.github.pkyit.fncaptcha.util;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.github.pkyit.fncaptcha.domain.dto.CaptchaImageResultDTO;
+import com.github.pkyit.fncaptcha.domain.consts.CaptchaImageConst;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -11,38 +12,25 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 /**
  * 滑块验证码图片生成工具类（圆形缺口版，固定 300×150 画布）
  */
-public class CaptchaImageUtil {
-
-	private static final String IMAGE_DIR = "bg_images/"; // 图片目录
-	private static final int IMAGE_COUNT = 40; // 图片数量
-	private static final List<String> IMAGE_NAMES = new ArrayList<>(); //  图片名称列表
-
-	static {
-		// 读取图片名称列表
-		for (int i = 1; i <= IMAGE_COUNT; i++) {
-			IMAGE_NAMES.add(i + ".png");
-		}
-	}
+public class CaptchaImageUtils {
 
 	/**
 	 * 生成圆形缺口验证码图片
 	 * 画布：300×150
 	 * 滑块：36×36 圆形
-	 * 缺口位置随机：x 60~210, y 40~60
+	 * 缺口位置随机：x 58~248, y 48~118
 	 */
 	public static CaptchaImageResultDTO generate() throws IOException {
 		// 随机选一张图片
-		String imageName = RandomUtil.randomEle(IMAGE_NAMES);
-		InputStream is = CaptchaImageUtil.class.getClassLoader().getResourceAsStream(IMAGE_DIR + imageName);
+		String imageName = RandomUtil.randomEle(CaptchaImageConst.getIMAGE_NAMES());
+		InputStream is = CaptchaImageUtils.class.getClassLoader().getResourceAsStream(CaptchaImageConst.getIMAGE_DIR() + imageName);
 		if (is == null) {
-			throw new IOException("图片不存在: " + IMAGE_DIR + imageName);
+			throw new IOException("图片不存在: " + CaptchaImageConst.getIMAGE_DIR() + imageName);
 		}
 
 		BufferedImage original = ImageIO.read(is);
@@ -57,7 +45,7 @@ public class CaptchaImageUtil {
 		int gapY = centerY - 18;
 
 		// 生成背景图（带圆形缺口）
-		BufferedImage background = createBackgroundWithCircleGap(original, centerX, centerY,true);
+		BufferedImage background = createBackgroundWithCircleGap(original, centerX, centerY, true);
 
 		// 生成圆形滑块（透明背景）
 		BufferedImage slider = createCircleSlider(original, centerX, centerY);
@@ -77,11 +65,11 @@ public class CaptchaImageUtil {
 	/**
 	 * 创建带圆形缺口的背景图
 	 *
-	 * @param centerX 圆心 x
-	 * @param centerY 圆心 y
+	 * @param centerX      圆心 x
+	 * @param centerY      圆心 y
 	 * @param noiseEnabled 是否开启干扰模式
 	 */
-	private static BufferedImage createBackgroundWithCircleGap(BufferedImage source, int centerX, int centerY,boolean noiseEnabled) {
+	private static BufferedImage createBackgroundWithCircleGap(BufferedImage source, int centerX, int centerY, boolean noiseEnabled) {
 		// 使用 RGB 类型，不带透明通道
 		BufferedImage bg = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bg.createGraphics();
@@ -146,6 +134,7 @@ public class CaptchaImageUtil {
 		g.dispose();
 		return slider;
 	}
+
 	private static String imageToBase64(BufferedImage image, String format) throws IOException {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			ImageIO.write(image, format, baos);

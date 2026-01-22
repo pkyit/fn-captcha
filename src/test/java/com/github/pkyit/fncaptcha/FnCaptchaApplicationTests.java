@@ -1,6 +1,6 @@
 package com.github.pkyit.fncaptcha;
 
-import com.github.pkyit.fncaptcha.util.CaptchaImageUtil;
+import com.github.pkyit.fncaptcha.util.CaptchaImageUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,7 +14,7 @@ class FnCaptchaApplicationTests {
 
     @Test
 	void testGenerateCaptcha() throws IOException {
-		com.github.pkyit.fncaptcha.domain.dto.CaptchaImageResultDTO result = CaptchaImageUtil.generate();
+		com.github.pkyit.fncaptcha.domain.dto.CaptchaImageResultDTO result = CaptchaImageUtils.generate();
 
 		System.out.println("GapX: " + result.getGapX() + ", GapY: " + result.getGapY());
 		System.out.println("Bg length: " + result.getBackgroundBase64().length());

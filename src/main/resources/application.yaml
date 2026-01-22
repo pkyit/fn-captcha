@@ -8,3 +8,17 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 5s
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      #      password: redis123456
+      database: 0
+
+# 验证码配置
+pkyit:
+  fncaptch:
+    config:
+      image-path: bg_images/
+      image-count: 40
+      image-type: .png
