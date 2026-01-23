@@ -28,43 +28,11 @@ public class CaptchaConfiguration {
 	}
 
 	/**
-	 * 预加载验证码图片到内存中
-	 */
+	 * 检查验证码图片有效性
+	 * */
 	@PostConstruct
-	public void preloadCaptchaImages() {
-		log.info("开始预加载验证码图片...");
-
-		// 根据配置动态设置常量值
-		CaptchaImageConst.setIMAGE_DIR(captchaConfigProperties.getImagePath());
-		CaptchaImageConst.setIMAGE_COUNT(captchaConfigProperties.getImageCount());
-		CaptchaImageConst.setIMAGE_TYPE(captchaConfigProperties.getImageType());
-
-		// 初始化图片名称列表
+	public void checkImageValidity() {
 		List<String> imageNames = new ArrayList<>();
-		for (int i = 1; i <= captchaConfigProperties.getImageCount(); i++) {
-			String imageName = i + captchaConfigProperties.getImageType();
-			// 验证图片是否存在
-			Resource resource = new ClassPathResource(captchaConfigProperties.getImagePath() + imageName);
-			try {
-				if (resource.exists()) {
-					imageNames.add(imageName);
-				} else {
-					log.warn("验证码图片不存在: {}{}", captchaConfigProperties.getImagePath(), imageName);
-				}
-			} catch (Exception e) {
-				log.error("检查验证码图片时发生错误: {}{}", captchaConfigProperties.getImagePath(), imageName, e);
-			}
-		}
 
-		CaptchaImageConst.setIMAGE_NAMES(imageNames);
-		log.info("验证码图片预加载完成，共加载 {} 张图片", imageNames.size());
-	}
-
-	/**
-	 * 提供预加载的图片名称列表作为Bean
-	 */
-	@Bean
-	public List<String> captchaImageNames() {
-		return CaptchaImageConst.getIMAGE_NAMES();
 	}
 }
