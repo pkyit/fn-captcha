@@ -33,6 +33,6 @@ Thumbs.db
 node_modules/
 
 .lingma/
-.claude/
+#.claude/
 .playwright-mcp/
 captcha-ui/dist/
