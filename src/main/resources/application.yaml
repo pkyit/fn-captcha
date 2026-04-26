@@ -19,6 +19,9 @@ spring:
 pkyit:
   fncaptch:
     config:
-      image-path: bg_images/
+      image-path: classpath:bg_images/
       image-count: 40
-      image-type: .png
+      encryption: false
+      difficult: false
+      expire-time: 120
+
